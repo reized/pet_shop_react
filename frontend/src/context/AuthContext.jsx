@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
+import { BASE_URL } from "../utils";
 
 const AuthContext = createContext();
 
@@ -12,49 +14,121 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem("token"));
     const [loading, setLoading] = useState(true);
 
+    // Set up axios default headers
     useEffect(() => {
-        // Simulate checking for existing session
-        const savedUser = JSON.parse(localStorage.getItem("user") || "null");
-        setUser(savedUser);
-        setLoading(false);
-    }, []);
+        if (token) {
+            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+            // Verify token and get user info
+            verifyToken();
+        } else {
+            delete axios.defaults.headers.common["Authorization"];
+            setLoading(false);
+        }
+    }, [token]);
 
-    const login = async (email, password) => {
-        // Simulate API call
-        const mockUser = {
-            id: 1,
-            name: "John Doe",
-            email: email,
-        };
-        setUser(mockUser);
-        localStorage.setItem("user", JSON.stringify(mockUser));
-        return mockUser;
+    const verifyToken = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/profile`);
+            if (response.data.success) {
+                setUser(response.data.user);
+            } else {
+                logout();
+            }
+        } catch (error) {
+            console.error("Token verification failed:", error);
+            logout();
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const register = async (userData) => {
-        // Simulate API call
-        const mockUser = {
-            id: Date.now(),
-            ...userData,
-        };
-        setUser(mockUser);
-        localStorage.setItem("user", JSON.stringify(mockUser));
-        return mockUser;
+    const login = async (username, password) => {
+        try {
+            const response = await axios.post(`${BASE_URL}/login`, {
+                username,
+                password,
+            });
+
+            if (response.data.success) {
+                const { token: newToken, user: userData } = response.data;
+
+                // Save to localStorage
+                localStorage.setItem("token", newToken);
+
+                // Update state
+                setToken(newToken);
+                setUser(userData);
+
+                // Set axios default header
+                axios.defaults.headers.common[
+                    "Authorization"
+                ] = `Bearer ${newToken}`;
+
+                return { success: true, user: userData };
+            } else {
+                throw new Error(response.data.message || "Login failed");
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            throw new Error(
+                error.response?.data?.message || error.message || "Login failed"
+            );
+        }
     };
 
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem("user");
+    const register = async (username, password) => {
+        try {
+            const response = await axios.post(`${BASE_URL}/register`, {
+                username,
+                password,
+            });
+
+            if (response.data.success) {
+                return { success: true, message: response.data.message };
+            } else {
+                throw new Error(response.data.message || "Registration failed");
+            }
+        } catch (error) {
+            console.error("Registration error:", error);
+            throw new Error(
+                error.response?.data?.message ||
+                    error.message ||
+                    "Registration failed"
+            );
+        }
+    };
+
+    const logout = async () => {
+        try {
+            // Call logout endpoint (optional)
+            await axios.post(`${BASE_URL}/logout`);
+        } catch (error) {
+            console.error("Logout error:", error);
+        } finally {
+            // Clear local storage
+            localStorage.removeItem("token");
+
+            // Clear state
+            setToken(null);
+            setUser(null);
+
+            // Remove axios default header
+            delete axios.defaults.headers.common["Authorization"];
+        }
     };
 
     const value = {
         user,
+        token,
+        loading,
         login,
         register,
         logout,
-        loading,
+        isAuthenticated: !!user,
+        isAdmin: user?.role === "admin",
     };
 
     return (

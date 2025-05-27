@@ -63,8 +63,8 @@ const Header = () => {
                                         to="/profile"
                                         className="w-8 h-8 rounded-full mx-auto flex items-center justify-center bg-gray-500 hover:opacity-75 text-white text-sm font-bold"
                                     >
-                                        {user.name
-                                            ? user.name.charAt(0).toUpperCase()
+                                        {user.email
+                                            ? user.email.charAt(0).toUpperCase()
                                             : "U"}
                                     </Link>
                                 </div>

@@ -39,14 +39,13 @@ const Profile = () => {
                 <div className="bg-white p-6 rounded-lg shadow-md">
                     <div className="text-center">
                         <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center bg-gray-500 text-white text-3xl font-bold">
-                            {user.name
-                                ? user.name.charAt(0).toUpperCase()
+                            {user.email
+                                ? user.email.charAt(0).toUpperCase()
                                 : "U"}
                         </div>
                         <h2 className="text-xl font-semibold mb-2">
-                            {user.name}
+                            {user.email}
                         </h2>
-                        <p className="text-gray-600 mb-4">{user.email}</p>
                         <button
                             onClick={logout}
                             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
