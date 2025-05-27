@@ -27,7 +27,6 @@ export const AuthProvider = ({ children }) => {
             id: 1,
             name: "John Doe",
             email: email,
-            avatar: "https://via.placeholder.com/100",
         };
         setUser(mockUser);
         localStorage.setItem("user", JSON.stringify(mockUser));
@@ -39,7 +38,6 @@ export const AuthProvider = ({ children }) => {
         const mockUser = {
             id: Date.now(),
             ...userData,
-            avatar: "https://via.placeholder.com/100",
         };
         setUser(mockUser);
         localStorage.setItem("user", JSON.stringify(mockUser));

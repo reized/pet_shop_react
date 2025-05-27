@@ -14,67 +14,49 @@ const Header = () => {
     );
 
     return (
-        <header className="bg-blue-600 text-white shadow-lg">
+        <header className="bg-blue-600 text-white shadow-lg fixed w-full px-16 z-10">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     <Link to="/" className="text-2xl font-bold">
                         🐾 PCC PetShop
                     </Link>
 
-                    <nav className="hidden md:flex space-x-6">
-                        <Link to="/" className="hover:text-blue-200">
-                            Home
-                        </Link>
-                        <Link to="/products" className="hover:text-blue-200">
-                            Products
-                        </Link>
-                    </nav>
+                    {user && (
+                        <>
+                            <nav className="hidden md:flex space-x-6">
+                                <Link to="/" className="hover:opacity-75">
+                                    🏠Home
+                                </Link>
+                                <Link to="/products" className="hover:opacity-75">
+                                    🛍️Products
+                                </Link>
+                            </nav>
 
-                    <div className="flex items-center space-x-4">
-                        <Link
-                            to="/cart"
-                            className="relative hover:text-blue-200"
-                        >
-                            🛒 Cart
-                            {cartItemsCount > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                                    {cartItemsCount}
-                                </span>
-                            )}
-                        </Link>
-
-                        {user ? (
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-4">
                                 <Link
-                                    to="/profile"
-                                    className="hover:text-blue-200"
+                                    to="/cart"
+                                    className="relative hover:opacity-75"
                                 >
-                                    Profile
+                                    🛒 Cart
+                                    {cartItemsCount > 0 && (
+                                        <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                                            {cartItemsCount}
+                                        </span>
+                                    )}
                                 </Link>
-                                <button
-                                    onClick={logout}
-                                    className="hover:text-blue-200"
-                                >
-                                    Logout
-                                </button>
+                                <div className="flex items-center space-x-2">
+                                    <Link
+                                        to="/profile"
+                                        className="w-8 h-8 rounded-full mx-auto flex items-center justify-center bg-gray-500 hover:opacity-75 text-white text-sm font-bold"
+                                    >
+                                        {user.name
+                                            ? user.name.charAt(0).toUpperCase()
+                                            : "U"}
+                                    </Link>
+                                </div>
                             </div>
-                        ) : (
-                            <div className="flex items-center space-x-2">
-                                <Link
-                                    to="/login"
-                                    className="hover:text-blue-200"
-                                >
-                                    Login
-                                </Link>
-                                <Link
-                                    to="/register"
-                                    className="hover:text-blue-200"
-                                >
-                                    Register
-                                </Link>
-                            </div>
-                        )}
-                    </div>
+                        </>
+                    )}
                 </div>
             </div>
         </header>

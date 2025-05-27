@@ -2,16 +2,20 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onAddToCart }) => {
     const { addToCart } = useCart();
 
     const handleAddToCart = (e) => {
         e.preventDefault();
-        addToCart(product);
+        if (onAddToCart) {
+            onAddToCart();
+        } else {
+            addToCart(product);
+        }
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden hover:scale-[102%] hover:shadow-lg duration-200 transition-all cursor-pointer">
             <Link to={`/products/${product.id}`}>
                 <img
                     src={product.image}
@@ -25,10 +29,14 @@ const ProductCard = ({ product }) => {
                         {product.name}
                     </h3>
                 </Link>
-                <p className="text-gray-600 text-sm mb-2">{product.category}</p>
-                <p className="text-gray-700 text-sm mb-3 line-clamp-2">
-                    {product.description}
-                </p>
+                <div className="flex justify-between">
+                    <p className="text-gray-600 text-sm mb-2 bg-gray-200 px-1 rounded">
+                        {product.category}
+                    </p>
+                    <p className="text-gray-500 text-sm mb-2">
+                        Stock: {product.jumlah_stok}
+                    </p>
+                </div>
                 <div className="flex items-center justify-between">
                     <span className="text-xl font-bold text-blue-600">
                         ${product.price}
@@ -36,8 +44,11 @@ const ProductCard = ({ product }) => {
                     <button
                         onClick={handleAddToCart}
                         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                        disabled={product.jumlah_stok <= 0}
                     >
-                        Add to Cart
+                        {product.jumlah_stok > 0
+                            ? "Add to Cart"
+                            : "Out of Stock"}
                     </button>
                 </div>
             </div>
