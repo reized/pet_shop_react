@@ -1,0 +1,39 @@
+######
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+  "username": "test3",
+  "password": "112111"
+}
+
+### Get notes (authenticated)
+GET http://localhost:5000/categories
+
+### Get categories by id (authenticated)
+GET http://localhost:5000/categories/2
+
+### Get products (authenticated)
+GET http://localhost:5000/products
+
+### Get products (authenticated)
+GET http://localhost:5000/products/category/9
+
+### Get product by ID
+GET http://localhost:5000/products/2
+
+### Update product
+PUT http://localhost:5000/edit-product/63
+Content-Type: application/json
+
+{
+  "name": "Kandang Kucing XL",
+  "description": "Ukuran jumbo baja ringan",
+  "price": 450000,
+  "jumlah_stok": 8,
+  "image_url": "https://example.com/kandang-xl.jpg",
+  "category_id": 1
+}
+
+### Delete product
+DELETE http://localhost:5000/delete-product/64
