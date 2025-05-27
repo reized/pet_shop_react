@@ -36,4 +36,4 @@ Content-Type: application/json
 }
 
 ### Delete product
-DELETE http://localhost:5000/delete-product/64
+DELETE http://localhost:5000/delete-product/6

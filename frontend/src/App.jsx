@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
+import Admin from "./pages/Admin";
 
 const App = () => {
     return (
@@ -41,6 +42,7 @@ const App = () => {
                                         path="/register"
                                         element={<Register />}
                                     />
+                                    <Route path="/admin" element={<Admin />} />
                                 </Routes>
                             </main>
                             <Footer />

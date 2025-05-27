@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
     const [formData, setFormData] = useState({
-        email: "",
+        username: "",
         password: "",
     });
     const [error, setError] = useState("");
@@ -26,10 +26,10 @@ const Login = () => {
         setLoading(true);
 
         try {
-            await login(formData.email, formData.password);
+            await login(formData.username, formData.password);
             navigate("/");
         } catch (err) {
-            setError("Invalid email or password");
+            setError("Invalid username or password");
         } finally {
             setLoading(false);
         }
@@ -51,12 +51,12 @@ const Login = () => {
 
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Email
+                        Username
                     </label>
                     <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
+                        type="text"
+                        name="username"
+                        value={formData.username}
                         onChange={handleChange}
                         required
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

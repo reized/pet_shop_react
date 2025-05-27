@@ -91,26 +91,26 @@ const getProducts  = async (req, res) => {
 const createProduct  = async (req, res) => {
   try {
     const { name, 
-            desc,
+            description,
             price,
             image_url,
-            jumlah_stock,
-            categoryId 
+            jumlah_stok,
+            category_id
           } = req.body;
         
     //const userId = req.user.id; // from JWT middleware
 
     await Product.create({ name, 
-                        desc,
+                        description,
                         price,
                         image_url,
-                        jumlah_stock,
-                        categoryId  /*user_id: userId*/ });
+                        jumlah_stok,
+                        category_id  /*user_id: userId*/ });
 
     res.status(201).json({ msg: "Product Added" });
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ msg: "Error creating Note" });
+    res.status(500).json({ msg: "Error creating product" });
   }
 };
 
@@ -171,8 +171,9 @@ const deleteProduct = async (req, res) => {
   try {
       const productId = req.params.id;  // Correct
       //const userId = req.user.id;  
+      console.log("Deleting product ID:", productId);
       
-      const result = await Note.destroy({
+      const result = await Product.destroy({
           where: { 
             id: productId,
             //user_id: userId
@@ -182,10 +183,10 @@ const deleteProduct = async (req, res) => {
       if (result) {
           res.json({ message: "Product deleted successfully!" });
       } else {
-          res.status(404).json({ error: "Note not found!" });
+          res.status(404).json({ error: "Product not found!" });
       }
   } catch (error) {
-      console.error("Error deleting Note:", error);
+      console.error("Error deleting Product:", error);
       res.status(500).json({ error: "Internal server error" });
   }
 };

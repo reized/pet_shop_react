@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { BASE_URL } from "../utils";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
     const { user, logout } = useAuth();
@@ -22,6 +23,9 @@ const Profile = () => {
                 <h2 className="text-2xl font-bold mb-4">
                     Please login to view your profile
                 </h2>
+                <Link to="/login" className="text-blue-600 hover:underline">
+                    Login here
+                </Link>
             </div>
         );
     }
@@ -35,7 +39,9 @@ const Profile = () => {
                 <div className="bg-white p-6 rounded-lg shadow-md">
                     <div className="text-center">
                         <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center bg-gray-500 text-white text-3xl font-bold">
-                            {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                            {user.name
+                                ? user.name.charAt(0).toUpperCase()
+                                : "U"}
                         </div>
                         <h2 className="text-xl font-semibold mb-2">
                             {user.name}
@@ -99,7 +105,8 @@ const Profile = () => {
                                                     {item.name} x{item.quantity}
                                                 </span>
                                                 <span>
-                                                    Rp{item.price.toLocaleString()}
+                                                    Rp
+                                                    {item.price.toLocaleString()}
                                                 </span>
                                             </li>
                                         ))}

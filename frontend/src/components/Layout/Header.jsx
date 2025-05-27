@@ -1,3 +1,4 @@
+// frontend/src/components/Layout/Header.jsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -27,23 +28,36 @@ const Header = () => {
                                 <Link to="/" className="hover:opacity-75">
                                     🏠Home
                                 </Link>
-                                <Link to="/products" className="hover:opacity-75">
+                                <Link
+                                    to="/products"
+                                    className="hover:opacity-75"
+                                >
                                     🛍️Products
                                 </Link>
+                                {user.role === "admin" && (
+                                    <Link
+                                        to="/admin"
+                                        className="hover:opacity-75 bg-red-500 px-3 py-1 rounded"
+                                    >
+                                        👨‍💼Admin
+                                    </Link>
+                                )}
                             </nav>
 
                             <div className="flex items-center space-x-4">
-                                <Link
-                                    to="/cart"
-                                    className="relative hover:opacity-75"
-                                >
-                                    🛒 Cart
-                                    {cartItemsCount > 0 && (
-                                        <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                                            {cartItemsCount}
-                                        </span>
-                                    )}
-                                </Link>
+                                {user.role !== "admin" && (
+                                    <Link
+                                        to="/cart"
+                                        className="relative hover:opacity-75"
+                                    >
+                                        🛒 Cart
+                                        {cartItemsCount > 0 && (
+                                            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                                                {cartItemsCount}
+                                            </span>
+                                        )}
+                                    </Link>
+                                )}
                                 <div className="flex items-center space-x-2">
                                     <Link
                                         to="/profile"
