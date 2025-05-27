@@ -1,10 +1,11 @@
 
 //import Note from "../models/NoteModel.js";
 import Categories from "../models/CategoryModel.js";
+import User from "../models/UserModel.js";
 import Product from "../models/ProductModel.js";
 import bcrypt from "bcrypt"; // Add this import
 import jwt from "jsonwebtoken"; 
-/*
+
 const doRegister = async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -29,18 +30,25 @@ const doLogin = async (req, res) => {
     
     // First problem: check if user exists
     if (!user) {
-      console.log('Invalid username or password');
-      return res.status(401).json({ message: 'Invalid username or password' });
+      console.log('Invalid username ddasdor password');
+      return res.status(401).json({ message: 'Invalid username dddddasdaor password' });
     }
     
     // Second problem: use user.password instead of User.password
+    
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      console.log('Invalid username or password');
-      return res.status(401).json({ message: 'Invalid username or password' });
+      console.log('Invalidcasda username or password');
+      return res.status(401).json({ message: 'Invalid dasascacusername or password' });
     }
+
+      if (password !== user.password) {
+        console.log("Invalid username or password");
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
     
     // Third problem: use user.id instead of User.id and provide a fallback JWT_SECRET
+    
     const token = jwt.sign(
       { id: user.id }, 
       process.env.JWT_SECRET || 'fallback_secret_key_for_development',
@@ -53,7 +61,7 @@ const doLogin = async (req, res) => {
     res.status(500).json({ message: 'Error logging in', error: error.message });
   }
 }
-*/
+
 // GET
 async function getCategoriesByID(req, res) {
   try {
@@ -201,5 +209,6 @@ export {  getCategoriesByID,
           getProductById,
           updateProduct,
           deleteProduct,
-          getProductByCategory
-          /* doLogin, doRegister,*/ };
+          getProductByCategory,
+          doLogin,
+          doRegister };
