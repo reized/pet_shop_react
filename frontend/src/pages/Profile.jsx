@@ -1,30 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import { BASE_URL } from "../utils";
 
 const Profile = () => {
     const { user, logout } = useAuth();
-    const [orders] = useState([
-        {
-            id: 1,
-            date: "2024-01-15",
-            total: 89.99,
-            status: "Delivered",
-            items: [
-                { name: "Premium Dog Food", quantity: 2, price: 29.99 },
-                { name: "Cat Toy Set", quantity: 1, price: 19.99 },
-            ],
-        },
-        {
-            id: 2,
-            date: "2024-01-10",
-            total: 45.5,
-            status: "Shipped",
-            items: [
-                { name: "Pet Shampoo", quantity: 1, price: 15.99 },
-                { name: "Dog Leash", quantity: 1, price: 29.51 },
-            ],
-        },
-    ]);
+    const [orders, setOrders] = useState([]);
+
+    useEffect(() => {
+        if (user) {
+            axios
+                .get(`${BASE_URL}/orders?user_id=${user.id}`)
+                .then((res) => setOrders(res.data))
+                .catch(() => setOrders([]));
+        }
+    }, [user]);
 
     if (!user) {
         return (
@@ -83,7 +73,7 @@ const Profile = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className="font-semibold">
-                                            ${order.total}
+                                            Rp{order.total.toLocaleString()}
                                         </p>
                                         <span
                                             className={`px-2 py-1 rounded text-sm ${
@@ -108,7 +98,9 @@ const Profile = () => {
                                                 <span>
                                                     {item.name} x{item.quantity}
                                                 </span>
-                                                <span>${item.price}</span>
+                                                <span>
+                                                    Rp{item.price.toLocaleString()}
+                                                </span>
                                             </li>
                                         ))}
                                     </ul>

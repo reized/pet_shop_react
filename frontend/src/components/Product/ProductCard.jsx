@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
-const ProductCard = ({ product, onAddToCart }) => {
+const ProductCard = ({ product, categoryName, onAddToCart }) => {
     const { addToCart } = useCart();
 
     const handleAddToCart = (e) => {
@@ -18,28 +18,28 @@ const ProductCard = ({ product, onAddToCart }) => {
         <div className="bg-white rounded-lg shadow-md overflow-hidden hover:scale-[102%] hover:shadow-lg duration-200 transition-all cursor-pointer">
             <Link to={`/products/${product.id}`}>
                 <img
-                    src={product.image}
+                    src={product.image_url}
                     alt={product.name}
                     className="w-full h-48 object-cover"
                 />
             </Link>
             <div className="p-4">
                 <Link to={`/products/${product.id}`}>
-                    <h3 className="text-lg font-semibold mb-2 hover:text-blue-600">
+                    <h3 className="text-md font-semibold mb-3 hover:text-blue-600">
                         {product.name}
                     </h3>
                 </Link>
                 <div className="flex justify-between">
-                    <p className="text-gray-600 text-sm mb-2 bg-gray-200 px-1 rounded">
-                        {product.category}
+                    <p className="text-gray-600 text-sm mb-6 bg-gray-200 px-1 rounded">
+                        {categoryName}
                     </p>
                     <p className="text-gray-500 text-sm mb-2">
                         Stock: {product.jumlah_stok}
                     </p>
                 </div>
                 <div className="flex items-center justify-between">
-                    <span className="text-xl font-bold text-blue-600">
-                        ${product.price}
+                    <span className="text-lg font-bold text-blue-600">
+                        Rp{product.price}
                     </span>
                     <button
                         onClick={handleAddToCart}

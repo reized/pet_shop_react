@@ -6,13 +6,13 @@ const CartItem = ({ item }) => {
     return (
         <div className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow">
             <img
-                src={item.image}
+                src={item.image_url}
                 alt={item.name}
                 className="w-16 h-16 object-cover rounded"
             />
             <div className="flex-1">
                 <h3 className="font-semibold">{item.name}</h3>
-                <p className="text-gray-600">${item.price}</p>
+                <p className="text-gray-600">Rp{item.price.toLocaleString()}</p>
             </div>
             <div className="flex items-center space-x-2">
                 <button
@@ -31,7 +31,7 @@ const CartItem = ({ item }) => {
             </div>
             <div className="text-right">
                 <p className="font-semibold">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    Rp{(item.price * item.quantity).toLocaleString()}
                 </p>
                 <button
                     onClick={() => removeFromCart(item.id)}
