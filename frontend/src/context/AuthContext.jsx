@@ -14,36 +14,35 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem("token"));
     const [loading, setLoading] = useState(true);
 
-    // Set up axios default headers
+    // Check if user is logged in on app start
     useEffect(() => {
+        const token = localStorage.getItem("token");
         if (token) {
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
             // Verify token and get user info
-            verifyToken();
+            axios
+                .get(`${BASE_URL}/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((response) => {
+                    if (response.data.success) {
+                        setUser(response.data.user);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Token verification failed:", error);
+                    localStorage.removeItem("token");
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
         } else {
-            delete axios.defaults.headers.common["Authorization"];
             setLoading(false);
         }
-    }, [token]);
-
-    const verifyToken = async () => {
-        try {
-            const response = await axios.get(`${BASE_URL}/profile`);
-            if (response.data.success) {
-                setUser(response.data.user);
-            } else {
-                logout();
-            }
-        } catch (error) {
-            console.error("Token verification failed:", error);
-            logout();
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, []);
 
     const login = async (username, password) => {
         try {
@@ -53,29 +52,20 @@ export const AuthProvider = ({ children }) => {
             });
 
             if (response.data.success) {
-                const { token: newToken, user: userData } = response.data;
-
-                // Save to localStorage
-                localStorage.setItem("token", newToken);
-
-                // Update state
-                setToken(newToken);
-                setUser(userData);
-
-                // Set axios default header
-                axios.defaults.headers.common[
-                    "Authorization"
-                ] = `Bearer ${newToken}`;
-
-                return { success: true, user: userData };
+                const { token, user } = response.data;
+                localStorage.setItem("token", token);
+                setUser(user);
+                return { success: true, user };
             } else {
                 throw new Error(response.data.message || "Login failed");
             }
         } catch (error) {
             console.error("Login error:", error);
-            throw new Error(
-                error.response?.data?.message || error.message || "Login failed"
-            );
+            const message =
+                error.response?.data?.message ||
+                error.message ||
+                "Login failed";
+            throw new Error(message);
         }
     };
 
@@ -93,42 +83,44 @@ export const AuthProvider = ({ children }) => {
             }
         } catch (error) {
             console.error("Registration error:", error);
-            throw new Error(
+            const message =
                 error.response?.data?.message ||
-                    error.message ||
-                    "Registration failed"
-            );
+                error.message ||
+                "Registration failed";
+            throw new Error(message);
         }
     };
 
     const logout = async () => {
         try {
-            // Call logout endpoint (optional)
-            await axios.post(`${BASE_URL}/logout`);
+            const token = localStorage.getItem("token");
+            if (token) {
+                // Call logout endpoint (optional since JWT is stateless)
+                await axios.post(
+                    `${BASE_URL}/logout`,
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+            }
         } catch (error) {
             console.error("Logout error:", error);
         } finally {
-            // Clear local storage
+            // Always clear local storage and user state
             localStorage.removeItem("token");
-
-            // Clear state
-            setToken(null);
             setUser(null);
-
-            // Remove axios default header
-            delete axios.defaults.headers.common["Authorization"];
         }
     };
 
     const value = {
         user,
-        token,
-        loading,
         login,
         register,
         logout,
-        isAuthenticated: !!user,
-        isAdmin: user?.role === "admin",
+        loading,
     };
 
     return (
