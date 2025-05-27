@@ -3,9 +3,19 @@ POST http://localhost:5000/login
 Content-Type: application/json
 
 {
-  "username": "test3",
-  "password": "112111"
+  "username": "admin",
+  "password": "111111"
 }
+
+######
+POST http://localhost:5000/register
+Content-Type: application/json
+
+{
+    "username": "test3",
+    "password": "112111"
+}
+
 
 ### Get notes (authenticated)
 GET http://localhost:5000/categories
