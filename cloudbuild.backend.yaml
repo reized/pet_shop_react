@@ -1,50 +1,36 @@
-# cloudbuild.backend.yaml
 steps:
-  # 1. membuat docker image be
+  - name: "gcr.io/cloud-builders/gsutil"
+    args: ["cp", "${_ENV}", "backend/.env"]
+    
+  # 1. Build Docker image untuk backend
   - name: "gcr.io/cloud-builders/docker"
-    args: 
-      - "build"
-      - "--cache-from"
-      - "gcr.io/$PROJECT_ID/pet-shop-be"
-      - "-t"
-      - "gcr.io/$PROJECT_ID/pet-shop:${SHORT_SHA}"
-      - "."
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/pet-shop-be", "."]
     dir: "backend"
 
-  # 2. mendorong container registry
+  # 2. Push ke Container Registry / Artifact Registry
   - name: "gcr.io/cloud-builders/docker"
-    args: 
-      - "push"
-      - "gcr.io/$PROJECT_ID/pet-shop-be:${SHORT_SHA}"
+    args: ["push", "gcr.io/$PROJECT_ID/pet-shop-be"]
 
   # 3. Deploy ke Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
-    entrypoint: "gcloud"
+    entrypoint: gcloud
     args:
-      - "run"
-      - "deploy"
-      - "pet-shop-be"
-      - "--image"
-      - "gcr.io/$PROJECT_ID/pet-shop-be:${SHORT_SHA}"
-      - "--timeout"
-      - "1000s"
-      - "--port"
-      - "5000"
-      - "--region"
-      - "us-central1"
-      - "--allow-unauthenticated"
-      - "--set-env-vars"
-      - |
-        JWT_SECRET=${_JWT_SECRET},
-        JWT_EXPIRATION_TIME=${_JWT_EXPIRATION_TIME},
-        DB_HOST=${_DB_HOST},
-        DB_DATABASE=${_DB_DATABASE},
-        DB_PASSWORD=${_DB_PASSWORD},
-        DB_USER=${_DB_USER},
-        DB_PORT=${_DB_PORT},
-        DB_DIALECT=${_DB_DIALECT}
+      [
+        "run",
+        "deploy",
+        "pet-shop-be",
+        "--image",
+        "gcr.io/$PROJECT_ID/pet-shop-be",
+        "--timeout",
+        "1000s",
+        "--port",
+        "5000",
+        "--region",
+        "us-central1",
+        "--allow-unauthenticated",
+      ]
 
-timeout: "1200s"
-
+# Log hanya akan disimpan di Google Cloud Logging
+# Log tidak akan disimpan di Google Cloud Storage (butuh hak akses).
 options:
   logging: CLOUD_LOGGING_ONLY
