@@ -19,3 +19,6 @@ Base URL = https://pet-shop-be-298647753913.us-central1.run.app
 
 <h2 align="center">Mengambil daftar produk berdasarkan kategori</h2>
 <p align="center">https://pet-shop-be-298647753913.us-central1.run.app/products/category/2</p>
+
+<h2 align="center">Mengambil daftar produk berdasarkan id produk</h2>
+<p align="center">https://pet-shop-be-298647753913.us-central1.run.app/products//products/24</p>
