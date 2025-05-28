@@ -1,17 +1,36 @@
 import { useState, useEffect } from "react";
-import { mockProducts } from "../data/mockData";
+import axios from "axios";
 import ProductCard from "../components/Product/ProductCard";
 import ProductFilter from "../components/Product/ProductFilter";
+import { useCart } from "../context/CartContext";
+import { BASE_URL } from "../utils";
 
 const Products = () => {
-    const [products, setProducts] = useState(mockProducts);
-    const [filteredProducts, setFilteredProducts] = useState(mockProducts);
+    const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
+    const { addToCart } = useCart();
 
-    const categories = [
-        ...new Set(mockProducts.map((product) => product.category)),
-    ];
+    useEffect(() => {
+        axios
+            .get(`${BASE_URL}/products`)
+            .then((res) => {
+                setProducts(res.data);
+                setFilteredProducts(res.data);
+            })
+            .catch((err) => {
+                console.error("Error fetching products:", err);
+            });
+
+        axios
+            .get(`${BASE_URL}/categories`)
+            .then((res) => setCategories(res.data))
+            .catch((err) => {
+                console.error("Error fetching categories:", err);
+            });
+    }, []);
 
     useEffect(() => {
         let filtered = products;
@@ -30,12 +49,25 @@ const Products = () => {
 
         if (selectedCategory) {
             filtered = filtered.filter(
-                (product) => product.category === selectedCategory
+                (product) => String(product.category_id) === String(selectedCategory)
             );
         }
 
         setFilteredProducts(filtered);
     }, [searchTerm, selectedCategory, products]);
+
+    const handleAddToCart = (product) => {
+        if (product.jumlah_stok > 0) {
+            addToCart(product);
+            setProducts((prev) =>
+                prev.map((p) =>
+                    p.id === product.id
+                        ? { ...p, jumlah_stok: p.jumlah_stok - 1 }
+                        : p
+                )
+            );
+        }
+    };
 
     return (
         <div>
@@ -50,9 +82,20 @@ const Products = () => {
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                ))}
+                {filteredProducts.map((product) => {
+                    // Cari nama kategori berdasarkan category_id
+                    const category = categories.find(
+                        (cat) => String(cat.id) === String(product.category_id)
+                    );
+                    return (
+                        <ProductCard
+                            key={product.id}
+                            product={product}
+                            categoryName={category ? category.nama_jenis : ""}
+                            onAddToCart={() => handleAddToCart(product)}
+                        />
+                    );
+                })}
             </div>
 
             {filteredProducts.length === 0 && (
