@@ -1,50 +1,23 @@
-# cloudbuild.backend.yaml
 steps:
-  # 1. membuat docker image be
-  - id: build-image
-    name: "gcr.io/cloud-builders/docker"
-    args: 
-      - "build"
-      - "-t"
-      - "gcr.io/$PROJECT_ID/pet-shop-be:${SHORT_SHA}"
-      - "."
-    dir: "backend"
-
-  # 2. mendorong container registry
-  - id: push-image
-    name: "gcr.io/cloud-builders/docker"
-    args: 
-      - "push"
-      - "gcr.io/$PROJECT_ID/pet-shop-be:${SHORT_SHA}"
-
-  # 3. Deploy ke Cloud Run
-  - name: "gcr.io/cloud-builders/gcloud"
-    entrypoint: "gcloud"
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/pet-shop-be', '.']
+    dir: backend
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/pet-shop-be']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
     args:
-      - "run"
-      - "deploy"
-      - "pet-shop-be"
-      - "--image"
-      - "gcr.io/$PROJECT_ID/pet-shop-be:${SHORT_SHA}"
-      - "--timeout"
-      - "1000s"
-      - "--port"
-      - "5000"
-      - "--region"
-      - "us-central1"
-      - "--allow-unauthenticated"
-      - "--set-env-vars"
-      - |
-        JWT_SECRET=${_JWT_SECRET},
-        JWT_EXPIRATION_TIME=${_JWT_EXPIRATION_TIME},
-        DB_HOST=${_DB_HOST},
-        DB_DATABASE=${_DB_DATABASE},
-        DB_PASSWORD=${_DB_PASSWORD},
-        DB_USER=${_DB_USER},
-        DB_PORT=${_DB_PORT},
-        DB_DIALECT=${_DB_DIALECT}
-
-timeout: "1200s"
-
-options:
-  logging: CLOUD_LOGGING_ONLY
+      [
+        'run',
+        'deploy',
+        'pet-shop-be',
+        '--image',
+        'gcr.io/$PROJECT_ID/pet-shop-be',
+        '--region',
+        'us-central1',
+        '--platform',
+        'managed',
+        '--allow-unauthenticated'
+      ]
+images:
+  - gcr.io/$PROJECT_ID/pet-shop-be
