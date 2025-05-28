@@ -39,7 +39,7 @@ Content-Type: application/json
 {
   "name": "Kandang Kucing XL",
   "description": "Ukuran jumbo baja ringan",
-  "price": 450000,
+  "price": 4500004,
   "jumlah_stok": 8,
   "image_url": "https://example.com/kandang-xl.jpg",
   "category_id": 1
