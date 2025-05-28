@@ -1,7 +1,8 @@
 # cloudbuild.backend.yaml
 steps:
   # 1. membuat docker image be
-  - name: "gcr.io/cloud-builders/docker"
+  - id: build-image
+    name: "gcr.io/cloud-builders/docker"
     args: 
       - "build"
       - "--cache-from"
@@ -12,7 +13,8 @@ steps:
     dir: "backend"
 
   # 2. mendorong container registry
-  - name: "gcr.io/cloud-builders/docker"
+  - id: push-image
+    name: "gcr.io/cloud-builders/docker"
     args: 
       - "push"
       - "gcr.io/$PROJECT_ID/pet-shop-be:${SHORT_SHA}"
