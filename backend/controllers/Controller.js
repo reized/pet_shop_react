@@ -15,7 +15,7 @@ const doRegister = async (req, res) => {
       }
       
       const hashedPassword = await bcrypt.hash(password, 10);
-      await User.create({ username, password: hashedPassword });
+      await User.create({ username, password: hashedPassword, role: 'user' });
       res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
       res.status(500).json({ message: 'Error registering user', error });
@@ -42,11 +42,6 @@ const doLogin = async (req, res) => {
       return res.status(401).json({ message: 'Invalid dasascacusername or password' });
     }
 
-      if (password !== user.password) {
-        console.log("Invalid username or password");
-        return res.status(401).json({ message: "Invalid username or password" });
-      }
-    
     // Third problem: use user.id instead of User.id and provide a fallback JWT_SECRET
     
     const token = jwt.sign(

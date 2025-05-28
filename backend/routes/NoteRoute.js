@@ -13,7 +13,7 @@ import {getCategoriesByID,
 
 
 const router = express.Router();
-//import { authenticateToken } from '../middleware/authenticateToken.js';
+import { authenticateToken } from '../middleware/authenticateToken.js';
 
 router.get("/categories", getCategories);
 router.get("/categories/:id", getCategoriesByID);
