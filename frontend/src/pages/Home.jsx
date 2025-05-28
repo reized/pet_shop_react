@@ -1,9 +1,33 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { mockProducts } from "../data/mockData";
+import axios from "axios";
 import ProductCard from "../components/Product/ProductCard";
+import { BASE_URL } from "../utils";
 
 const Home = () => {
-    const featuredProducts = mockProducts.slice(0, 6);
+    const [featuredProducts, setFeaturedProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        axios
+            .get(`${BASE_URL}/products`)
+            .then((res) => {
+                // Ambil 6 produk pertama sebagai featured
+                setFeaturedProducts(res.data.slice(0, 6));
+            })
+            .catch((err) => {
+                setFeaturedProducts([]);
+                console.error("Error fetching products:", err);
+            });
+
+        axios
+            .get(`${BASE_URL}/categories`)
+            .then((res) => setCategories(res.data))
+            .catch((err) => {
+                setCategories([]);
+                console.error("Error fetching categories:", err);
+            });
+    }, []);
 
     return (
         <div>
@@ -73,9 +97,18 @@ const Home = () => {
                     </Link>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {featuredProducts.map((product) => (
-                        <ProductCard key={product.id} product={product} />
-                    ))}
+                    {featuredProducts.map((product) => {
+                        const category = categories.find(
+                            (cat) => String(cat.id) === String(product.category_id)
+                        );
+                        return (
+                            <ProductCard
+                                key={product.id}
+                                product={product}
+                                categoryName={category ? category.nama_jenis : ""}
+                            />
+                        );
+                    })}
                 </div>
             </section>
         </div>

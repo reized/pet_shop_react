@@ -30,9 +30,9 @@ const ProductFilter = ({
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="">All Categories</option>
-                        {categories.map((category) => (
-                            <option key={category} value={category}>
-                                {category}
+                        {categories.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.nama_jenis}
                             </option>
                         ))}
                     </select>

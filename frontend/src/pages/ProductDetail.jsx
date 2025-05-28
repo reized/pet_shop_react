@@ -1,14 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { mockProducts } from "../data/mockData";
+import axios from "axios";
 import { useCart } from "../context/CartContext";
+import { BASE_URL } from "../utils";
 
 const ProductDetail = () => {
     const { id } = useParams();
     const { addToCart } = useCart();
     const [quantity, setQuantity] = useState(1);
+    const [product, setProduct] = useState(null);
+    const [category, setCategory] = useState(null);
 
-    const product = mockProducts.find((p) => p.id === parseInt(id));
+    useEffect(() => {
+        axios
+            .get(`${BASE_URL}/products/${id}`)
+            .then((res) => {
+                setProduct(res.data);
+                return axios.get(`${BASE_URL}/categories/${res.data.category_id}`);
+            })
+            .then((res) => {
+                // Jika response berupa array, ambil elemen pertama
+                const cat = Array.isArray(res.data) ? res.data[0] : res.data;
+                setCategory(cat);
+            })
+            .catch(() => setProduct(null));
+    }, [id]);
 
     if (!product) {
         return (
@@ -39,50 +55,68 @@ const ProductDetail = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div>
                     <img
-                        src={product.image}
+                        src={product.image_url}
                         alt={product.name}
                         className="w-full h-96 object-cover rounded-lg"
                     />
                 </div>
 
-                <div>
-                    <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-                    <p className="text-gray-600 mb-4">{product.category}</p>
-                    <p className="text-gray-700 mb-6">{product.description}</p>
+                <div className="flex flex-col justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold mb-4">
+                            {product.name}
+                        </h1>
+                        <p className="text-gray-600 mb-4 bg-gray-200 px-1 rounded w-fit">
+                            {category ? category.nama_jenis : ""}
+                        </p>
+                        <p className="text-gray-700 mb-6">
+                            {product.description}
+                        </p>
 
-                    <div className="mb-6">
-                        <span className="text-3xl font-bold text-blue-600">
-                            ${product.price}
-                        </span>
-                    </div>
-
-                    <div className="flex items-center space-x-4 mb-6">
-                        <label className="font-semibold">Quantity:</label>
-                        <div className="flex items-center space-x-2">
-                            <button
-                                onClick={() =>
-                                    setQuantity(Math.max(1, quantity - 1))
-                                }
-                                className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300"
-                            >
-                                -
-                            </button>
-                            <span className="w-8 text-center">{quantity}</span>
-                            <button
-                                onClick={() => setQuantity(quantity + 1)}
-                                className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300"
-                            >
-                                +
-                            </button>
+                        <div className="mb-6">
+                            <span className="text-3xl font-bold text-blue-600">
+                                Rp{product.price}
+                            </span>
                         </div>
                     </div>
 
-                    <button
-                        onClick={handleAddToCart}
-                        className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                    >
-                        Add to Cart
-                    </button>
+                    <div>
+                        <div className="flex items-center space-x-4 mb-6">
+                            <p className="text-gray-700">
+                                Stock: {product.jumlah_stok}
+                            </p>
+                            <div className="flex items-center space-x-2">
+                                <button
+                                    onClick={() =>
+                                        setQuantity(Math.max(1, quantity - 1))
+                                    }
+                                    className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300"
+                                >
+                                    -
+                                </button>
+                                <span className="w-8 text-center">
+                                    {quantity}
+                                </span>
+                                <button
+                                    onClick={() => setQuantity(quantity + 1)}
+                                    className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300"
+                                    disabled={quantity >= product.jumlah_stok}
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={handleAddToCart}
+                            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                            disabled={product.jumlah_stok === 0}
+                        >
+                            {product.jumlah_stok > 0
+                                ? "Add to Cart"
+                                : "Out of Stock"}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
