@@ -4,6 +4,61 @@ import Product from "../models/ProductModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+// Tambahkan import di atas file Controller.js
+import multer from 'multer';
+import NextCloudService from '../services/NextCloudService.js';
+
+// Setup multer untuk memory storage
+const storage = multer.memoryStorage();
+export const upload = multer({ 
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+});
+
+// Update createProduct function
+const createProduct = async (req, res) => {
+    try {
+        const {
+            name,
+            description,
+            price,
+            jumlah_stok,
+            category_id,
+        } = req.body;
+
+        let image_url = null;
+
+        // Handle file upload to NextCloud
+        if (req.file) {
+            const fileName = `${Date.now()}-${req.file.originalname}`;
+            image_url = await NextCloudService.uploadFile(
+                req.file.buffer, 
+                fileName, 
+                'petshop-images'
+            );
+        }
+
+        const product = await Product.create({
+            name,
+            description,
+            price: parseInt(price),
+            jumlah_stok: parseInt(jumlah_stok),
+            image_url,
+            category_id: parseInt(category_id),
+        });
+
+        res.status(201).json({ 
+            msg: "Product Added",
+            product: product
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ msg: "Error creating product", error: error.message });
+    }
+};
+
 const doRegister = async (req, res) => {
     const { username, password } = req.body;
 

@@ -37,4 +37,7 @@ router.post("/add-product", createProduct);
 router.put("/edit-product/:id", updateProduct);
 router.delete("/delete-product/:id", deleteProduct);
 
+router.post("/add-product", upload.single('image'), createProduct);
+router.put("/edit-product/:id", upload.single('image'), updateProduct);
+
 export default router;
