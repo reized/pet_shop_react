@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Existing Backend Service
+  # Backend Service
   backend:
     build: ./backend
     ports:
@@ -14,12 +14,17 @@ services:
       - DB_PORT=3306
       - DB_DIALECT=mysql
       - JWT_SECRET=your_jwt_secret_here
+      - NEXTCLOUD_URL=http://nextcloud
+      - NEXTCLOUD_USER=admin
+      - NEXTCLOUD_PASSWORD=admin123
     depends_on:
       - mysql
+      - nextcloud
     networks:
       - petshop-network
+    restart: unless-stopped
 
-  # MySQL Database
+  # MySQL Database - Single instance for both apps
   mysql:
     image: mysql:8.0
     environment:
@@ -34,6 +39,8 @@ services:
       - "3306:3306"
     networks:
       - petshop-network
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
 
   # NextCloud Service
   nextcloud:
@@ -47,35 +54,24 @@ services:
       - MYSQL_PASSWORD=nextcloud_password
       - NEXTCLOUD_ADMIN_USER=admin
       - NEXTCLOUD_ADMIN_PASSWORD=admin123
-      - NEXTCLOUD_TRUSTED_DOMAINS=localhost your-domain.com your-gcp-ip
+      - NEXTCLOUD_TRUSTED_DOMAINS=localhost nextcloud
     volumes:
       - nextcloud_data:/var/www/html
       - nextcloud_apps:/var/www/html/custom_apps
       - nextcloud_config:/var/www/html/config
+      - nextcloud_themes:/var/www/html/themes
     depends_on:
       - mysql
     networks:
       - petshop-network
-
-  # MySQL Database for NextCloud
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: petshop_db
-      MYSQL_USER: petshop_user
-      MYSQL_PASSWORD: petshop_password
-    volumes:
-      - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password
-    networks:
-      - petshop-network
+    restart: unless-stopped
 
 volumes:
   mysql_data:
   nextcloud_data:
   nextcloud_apps:
   nextcloud_config:
+  nextcloud_themes:
 
 networks:
   petshop-network:
